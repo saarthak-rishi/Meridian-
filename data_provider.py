@@ -275,6 +275,12 @@ def get_intraday_data(
 
         df = df[required].dropna()
         df.index = pd.to_datetime(df.index)
+        # yfinance returns UTC timestamps; convert to IST so chart axis
+        # lines up with the NSE trading session (09:15-15:30 IST).
+        if df.index.tz is not None:
+            df.index = df.index.tz_convert("Asia/Kolkata")
+        else:
+            df.index = df.index.tz_localize("UTC").tz_convert("Asia/Kolkata")
         return df
     except Exception as e:
         logger.error("intraday fetch failed for %s: %s", symbol, e)
