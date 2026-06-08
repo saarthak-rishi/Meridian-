@@ -1,16 +1,16 @@
 # Meridian
 
-A modular, multi-window Indian Financial Dashboard — real-time NSE equity quotes, INR forex crosses, macro indices, and sentiment-scored news in a dark Bloomberg-style terminal layout.
+A multi-window Indian Financial Dashboard with real-time NSE equity quotes, INR forex prices, macro indices, and sentiment-scored news in a dark Bloomberg style terminal layout.
 
 ## Features
 
-- **Live candlestick chart** — full TradingView Advanced Chart widget with intraday data, indicators, drawing tools
-- **NSE equity quotes** — current price, day high/low, VWAP, volume, day-range bar
-- **INR forex desk** — USD, EUR, GBP, JPY vs INR with inline unicode sparklines
-- **Macro tape** — Nifty 50, Nifty Bank, India VIX, USD/INR at a glance
-- **News sentiment** — VADER-scored headlines from Moneycontrol & Economic Times
-- **Market status badge** — live IST clock + NSE Open/Closed indicator
-- **Dark terminal UI** — clean monospaced layout, no neon, no bloat
+- **Live candlestick chart** : full TradingView Advanced Chart widget with intraday data, indicators, drawing tools
+- **NSE equity quotes** : current price, day high/low, VWAP, volume, day-range bar
+- **INR forex desk** : USD, EUR, GBP, JPY vs INR with inline unicode sparklines
+- **Macro tape** : Nifty 50, Nifty Bank, India VIX, USD/INR at a glance
+- **News sentiment** : VADER-scored headlines from Moneycontrol & Economic Times
+- **Market status badge** : live IST clock + NSE Open/Closed indicator
+- **Dark terminal UI** : clean monospaced layout, no neon, no bloat
 
 ## Screenshots
 
