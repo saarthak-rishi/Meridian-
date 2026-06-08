@@ -138,6 +138,11 @@ def _cached_news(limit: int):
     return dp.get_rss_news_feed(limit=limit)
 
 
+@st.cache_data(ttl=30, show_spinner=False)
+def _cached_intraday(ticker: str, interval: str, period: str):
+    return dp.get_intraday_data(ticker, interval=interval, period=period)
+
+
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
@@ -231,9 +236,13 @@ with st.spinner(f"loading {ticker}..."):
     forex    = _cached_forex()
     news_raw = _cached_news(30)
 
-# (historical bars + MA no longer needed -- TradingView handles charting)
 scored_news       = an.score_news_batch(news_raw)
 sentiment_overall = an.aggregate_sentiment(scored_news)
+
+# intraday bars for the live candlestick chart (5m candles, last 3 trading days)
+# NOTE: yfinance intraday is 15-min delayed but gives enough context for positioning.
+_intraday = _cached_intraday(ticker, interval="5m", period="3d")
+_intraday_ma = an.add_moving_average(_intraday, window=12, column="Close")
 
 
 # ---------------------------------------------------------------------------
@@ -243,7 +252,7 @@ sentiment_overall = an.aggregate_sentiment(scored_news)
 left_col, right_col = st.columns([3, 2], gap="medium")
 
 with left_col:
-    ui.render_tradingview_chart(ticker)
+    ui.render_candlestick_chart(_intraday_ma, ticker, ma_col="MA12")
     st.markdown("<hr>", unsafe_allow_html=True)
     ui.render_metric_board(quote, sentiment_overall)
 

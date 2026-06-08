@@ -213,6 +213,75 @@ def get_historical_data(ticker: str, period: str = "1mo") -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# intraday OHLCV (for the live chart)
+# ---------------------------------------------------------------------------
+
+def get_intraday_data(
+    ticker: str,
+    interval: str = "5m",
+    period: str = "3d",
+) -> pd.DataFrame:
+    """
+    fetch intraday OHLCV bars via yfinance for the live candlestick chart.
+
+    Usable intervals (yfinance) and their max look-back:
+        1m, 2m, 5m  ──  max  7 days
+        15m, 30m    ──  max 60 days
+        1h          ──  max 730 days
+
+    Args:
+        ticker:   NSE symbol, e.g. "RELIANCE".
+        interval: bar width ("1m", "5m", "15m", "30m", "1h", …).
+        period:   how far back to fetch (depends on interval -- see above).
+
+    Returns:
+        DataFrame indexed by datetime with [Open, High, Low, Close, Volume].
+        empty DataFrame on failure.
+    """
+    ticker = (ticker or "").strip().upper()
+    if not ticker:
+        return pd.DataFrame()
+
+    if ticker.startswith("^") or ticker.endswith(NSE_SUFFIX) or "=" in ticker:
+        symbol = ticker
+    else:
+        symbol = f"{ticker}{NSE_SUFFIX}"
+
+    try:
+        df = yf.download(
+            symbol,
+            period=period,
+            interval=interval,
+            progress=False,
+            auto_adjust=False,
+        )
+        if df is None or df.empty:
+            logger.warning(
+                "yfinance returned empty intraday data for %s (interval=%s, period=%s)",
+                symbol, interval, period,
+            )
+            return pd.DataFrame()
+
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
+        required = ["Open", "High", "Low", "Close", "Volume"]
+        missing = [c for c in required if c not in df.columns]
+        if missing:
+            logger.warning(
+                "missing columns %s in intraday data for %s", missing, symbol,
+            )
+            return pd.DataFrame()
+
+        df = df[required].dropna()
+        df.index = pd.to_datetime(df.index)
+        return df
+    except Exception as e:
+        logger.error("intraday fetch failed for %s: %s", symbol, e)
+        return pd.DataFrame()
+
+
+# ---------------------------------------------------------------------------
 # macro indicators
 # ---------------------------------------------------------------------------
 
