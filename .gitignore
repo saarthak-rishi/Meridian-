@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Meridian project
+_backup_v1/
+.streamlit/
+
